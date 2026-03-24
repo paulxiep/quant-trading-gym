@@ -1,0 +1,51 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Quick-reference commands (self-note)
+# All commands run from: quant-trading-gym/
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Frontend ──────────────────────────────────────────────────────────────────
+docker compose -f docker-compose.frontend.yaml run --rm typecheck
+docker compose -f docker-compose.frontend.yaml run --rm format
+docker compose build frontend --no-cache
+
+# ── 1. Generate training data (Rust) ─────────────────────────────────────────
+# V6.1 full features (55), 100k ticks, 1k warmup
+# Output: data/training_NNN_market.parquet (auto-increments)
+cargo run --release -- --headless-record --full-features --ticks 100000 --record-warmup 1000
+
+# Multiple runs for diverse data (different market conditions per run)
+cargo run --release -- --headless-record --full-features --ticks 100000 --record-warmup 1000
+cargo run --release -- --headless-record --full-features --ticks 100000 --record-warmup 1000
+cargo run --release -- --headless-record --full-features --ticks 100000 --record-warmup 1000
+
+# Short run for quick iteration
+cargo run --release -- --headless-record --full-features --ticks 5000 --record-warmup 1000
+
+# ── 2. Check data quality ────────────────────────────────────────────────────
+python qtg.py check
+python qtg.py check --input data/training
+python qtg.py check data/training_001_market.parquet
+
+# ── 3. Train all models ──────────────────────────────────────────────────────
+# Trains: DT, RF, GB, LogReg, LinearSVC, GaussianNB
+# Outputs: models/*.json + models/*.pkl + models/ensemble_config.yaml
+python qtg.py train
+
+# Override paths
+python qtg.py train --input data/training --output-dir models
+
+# ── 4. SHAP + coefficient analysis ───────────────────────────────────────────
+# Trees: SHAP TreeExplainer (.pkl)
+# Linear/SVM: coefficient magnitude (.json)
+# NB: theta spread (.json)
+# Groups: Price, Technical, News, Microstructure, Volatility, Fundamental, MomentumQuality, VolumeCross
+python qtg.py shap
+python qtg.py shap --max-samples 2000
+python qtg.py shap --output shap_results.json
+
+# ── 5. Validate with live simulation ─────────────────────────────────────────
+# Loads models/*.json + models/ensemble_config.yaml
+cargo run --release -- --headless --full-features --ticks 50000
+
+# ── Full loop: record → check → train → shap → validate ─────────────────────
+cargo run --release -- --headless-record --full-features --ticks 100000 --record-warmup 1000 && python qtg.py check && python qtg.py train && python qtg.py shap --output shap_results.json && cargo run --release -- --headless --full-features --ticks 50000

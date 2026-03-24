@@ -1,0 +1,120 @@
+# V6.2 Training Configuration
+# Run: PYTHONPATH=python python -m training.train_models
+
+data:
+  # Base path for training data (loads {input}_NNN_market.parquet files)
+  # Paths relative to working directory (quant-trading-gym/)
+  input: data/training
+  output_dir: models
+  test_size: 0.2
+
+# Label: avg price return rate across horizons
+# buy if > buy_threshold, sell if < sell_threshold, else hold
+labels:
+  horizons: [8, 16, 32, 48, 64]
+  rolling_window: 5
+  buy_threshold: 0.01
+  sell_threshold: -0.01
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Feature selection (V6.2 — SHAP-driven trim, 55 → 28 features)
+# See shap_feature_engineering.md for analysis rationale
+# ─────────────────────────────────────────────────────────────────────────────
+
+feature_selection:
+  # Whole groups to exclude (all features in group dropped)
+  exclude_groups: [News, Microstructure, VolumeCross]
+  # Individual features to exclude (short/mid horizon Price redundancies)
+  exclude_features:
+    - f_log_return_1
+    - f_price_change_2
+    - f_price_change_3
+    - f_price_change_4
+    - f_price_change_6
+    - f_price_change_8
+    - f_price_change_12
+    - f_price_change_16
+    - f_price_change_24
+    - f_log_return_2
+    - f_log_return_3
+    - f_log_return_4
+    - f_log_return_6
+    - f_log_return_8
+    - f_log_return_12
+    - f_log_return_16
+    - f_log_return_24
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Tree-based models (V5.4)
+# ─────────────────────────────────────────────────────────────────────────────
+
+decision_trees:
+  - name: medium
+    max_depth: 12
+
+  - name: deep
+    max_depth: 16
+
+random_forests:
+  - name: small
+    n_estimators: 24
+    max_depth: 12
+    max_features: 0.9
+
+gradient_boosted:
+  - name: fast
+    n_estimators: 24
+    max_depth: 8
+    learning_rate: 0.4
+
+  - name: slow
+    n_estimators: 36
+    max_depth: 10
+    learning_rate: 0.25
+    subsample: 0.8
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Feature engineering (for linear/SVM/NB models only, trees don't need it)
+# Uncomment to enable linear model training with engineered features
+# ─────────────────────────────────────────────────────────────────────────────
+
+# feature_engineering:
+#   mode: auto
+#   top_k_interactions: 15
+#   top_k_squares: 8
+#   top_k_ratios: 5
+
+# ─────────────────────────────────────────────────────────────────────────────
+# V6.2 linear model types (disabled — trees outperform on this data)
+# ─────────────────────────────────────────────────────────────────────────────
+
+# linear_models:
+#   - name: logistic_v6
+#     solver: lbfgs
+#     max_iter: 5000
+#     C: 1.0
+
+# svm_models:
+#   - name: linear_svc_v6
+#     max_iter: 5000
+#     C: 1.0
+
+# naive_bayes:
+#   - name: naive_bayes_v6
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Ensemble (auto-generated after training)
+# ─────────────────────────────────────────────────────────────────────────────
+
+ensemble:
+  name: ensemble_v6
+  mode: auto        # weights = validation accuracy of each trained model
+  min_accuracy: 0.50 # exclude models below this accuracy from ensemble
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Analysis
+# ─────────────────────────────────────────────────────────────────────────────
+
+shap:
+  enabled: false
+  max_samples: 1000

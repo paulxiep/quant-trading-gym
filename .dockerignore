@@ -1,0 +1,41 @@
+# Rust build artifacts
+target/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+
+# Data & models
+data/
+models/
+
+# Frontend / Node
+node_modules/
+coverage/
+
+# Git
+.git/
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docs / planning (not needed in images)
+*.md
+docs/
+*.jpg
+
+# Environment
+.env
+.env.*
+
+# Generated
+profiling_results.csv

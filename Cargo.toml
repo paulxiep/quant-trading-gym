@@ -1,0 +1,88 @@
+[workspace]
+members = [
+    "crates/types",
+    "crates/sim-core",
+    "crates/quant",
+    "crates/agents",
+    "crates/parallel",
+    "crates/simulation",
+    "crates/tui",
+    "crates/news",
+    "crates/storage",
+    "crates/server",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+authors = ["paulxiep"]
+edition = "2024"
+
+[workspace.dependencies]
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml = "0.9"
+
+# Randomness
+rand = "0.8"
+
+# Internal crates
+types = { path = "crates/types" }
+sim-core = { path = "crates/sim-core" }
+quant = { path = "crates/quant" }
+agents = { path = "crates/agents" }
+parallel = { path = "crates/parallel" }
+simulation = { path = "crates/simulation" }
+tui = { path = "crates/tui" }
+news = { path = "crates/news" }
+storage = { path = "crates/storage" }
+server = { path = "crates/server" }
+
+# Async runtime (V4.2)
+tokio = { version = "1.42", features = ["full"] }
+
+# Storage (V3.9)
+rusqlite = { version = "0.38", features = ["bundled"] }
+
+# TUI dependencies
+ratatui = "0.30"
+crossterm = "0.29"
+crossbeam-channel = "0.5"
+
+# Parallelization (V3.5)
+rayon = "1.11"
+parking_lot = "0.12"
+
+# Small collections
+smallvec = { version = "1.15", features = ["serde"] }
+
+# CLI (V3.7)
+clap = { version = "4.5", features = ["derive", "env"] }
+
+[package]
+name = "quant-trading-gym"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+types.workspace = true
+sim-core.workspace = true
+agents.workspace = true
+simulation.workspace = true
+news.workspace = true
+tui.workspace = true
+storage.workspace = true
+server.workspace = true
+ratatui.workspace = true
+crossterm.workspace = true
+crossbeam-channel.workspace = true
+rand.workspace = true
+clap.workspace = true
+rayon.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_yaml.workspace = true
+axum = { version = "0.8", features = ["ws"] }

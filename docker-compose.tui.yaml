@@ -1,0 +1,49 @@
+# Quant Trading Gym - Docker Compose
+# V3.9: Added persistent storage support
+
+services:
+  # ─────────────────────────────────────────────────────────────────────────
+  # TUI Service: Browser-accessible terminal UI via ttyd
+  # ─────────────────────────────────────────────────────────────────────────
+  tui:
+    build:
+      context: .
+      dockerfile: dockerfile/tui/Dockerfile
+    ports:
+      - "7681:7681"  # ttyd web interface
+    volumes:
+      - ./data:/data  # V3.9: Persistent storage
+    environment:
+      - SIM_TICKS=10000
+      - SIM_TIER1=2500
+      - SIM_TIER2=7500
+      - SIM_POOL_SIZE=90000
+      - SIM_TICK_DELAY=0  # 20 ticks/sec for smooth viewing
+      - STORAGE_PATH=/data/sim.db  # V3.9: SQLite database path
+    # Uncomment for smaller demo:
+    # environment:
+    #   - SIM_TICKS=1000
+    #   - SIM_TIER1=50
+    #   - SIM_TIER2=200
+    #   - SIM_POOL_SIZE=1000
+    #   - STORAGE_PATH=/data/sim.db
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Headless Service: Benchmark/CI mode (no UI)
+  # ─────────────────────────────────────────────────────────────────────────
+  simulation:
+    build:
+      context: .
+      dockerfile: dockerfile/simulation/Dockerfile
+    volumes:
+      - ./data:/data  # V3.9: Persistent storage
+      - ./models:/app/models:ro
+    environment:
+      - SIM_HEADLESS=true
+      - SIM_TICKS=10000
+      - SIM_TIER1=2500
+      - SIM_TIER2=7000
+      - SIM_POOL_SIZE=90000
+      - STORAGE_PATH=/data/sim.db  # V3.9: SQLite database path
+    # Override for stress test:
+    # command: ["--ticks", "100000", "--tier1", "500", "--pool-size", "50000"]

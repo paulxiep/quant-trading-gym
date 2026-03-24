@@ -1,0 +1,45 @@
+[package]
+name = "server"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[features]
+default = ["parallel"]
+parallel = ["parallel/parallel"]
+
+[dependencies]
+# Internal crates
+types.workspace = true
+simulation.workspace = true
+quant.workspace = true
+news.workspace = true
+parallel.workspace = true
+
+# Async runtime
+tokio = { version = "1.42", features = ["full"] }
+
+# Web framework
+axum = { version = "0.8", features = ["ws"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["trace", "cors"] }
+
+# Serialization
+serde.workspace = true
+serde_json.workspace = true
+
+# Error handling
+thiserror = "2.0"
+
+# Logging/tracing
+tracing = "0.1"
+
+# Channels for sync-async bridge
+crossbeam-channel.workspace = true
+
+# Utilities
+futures = "0.3"
+parking_lot.workspace = true
+
+[dev-dependencies]
+tokio-test = "0.4"

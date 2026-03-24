@@ -1,0 +1,34 @@
+# Quant Trading Gym - Docker Compose
+# V4.2: Server + Frontend for React-based UI
+
+services:
+  # ─────────────────────────────────────────────────────────────────────────
+  # Server Service: HTTP/WebSocket backend for React frontend (V4.2)
+  # ─────────────────────────────────────────────────────────────────────────
+  server:
+    build:
+      context: .
+      dockerfile: dockerfile/server/Dockerfile
+    ports:
+      - "8001:8001"  # API/WebSocket server
+    volumes:
+      - ./data:/data
+      - ./models:/app/models:ro
+    environment:
+      - SIM_SERVER=true
+      - SIM_TICKS=0  # Run indefinitely
+      - STORAGE_PATH=/data/sim.db  # V4.5: Re-enabled with batched writes
+      - SIM_SERVER_PORT=8001
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Frontend Service: Production nginx server (V4.6)
+  # ─────────────────────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: dockerfile/frontend/Dockerfile
+      target: prod
+    ports:
+      - "80:80"
+    depends_on:
+      - server

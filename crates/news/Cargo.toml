@@ -1,0 +1,10 @@
+[package]
+name = "news"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+types.workspace = true
+rand.workspace = true
+serde.workspace = true

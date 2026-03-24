@@ -1,0 +1,17 @@
+[package]
+name = "quant"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Quantitative analysis - indicators, risk metrics, and statistical calculations"
+
+[dependencies]
+types.workspace = true
+serde.workspace = true
+
+# NOTE: faer is available if we need matrix operations for more complex
+# cointegration tests (Engle-Granger, Johansen) in future versions.
+# For V3.3, simple OLS (cov/var formula) is sufficient and avoids the dependency.
+
+[dev-dependencies]
+# For testing with approximate floating point comparisons

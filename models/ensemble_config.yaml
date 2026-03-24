@@ -1,0 +1,13 @@
+ensemble:
+  name: ensemble_v6
+  members:
+  - model: GradientBoosted_slow
+    weight: 0.8448
+  - model: GradientBoosted_fast
+    weight: 0.7224
+  - model: RandomForest_small
+    weight: 0.6512
+  - model: DecisionTree_deep
+    weight: 0.6313
+  - model: DecisionTree_medium
+    weight: 0.5112

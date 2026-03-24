@@ -1,0 +1,21 @@
+[package]
+name = "simulation"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Simulation runner for the quant-trading-gym"
+
+[features]
+default = ["parallel"]
+parallel = ["parallel/parallel"]
+
+[dependencies]
+types.workspace = true
+sim-core.workspace = true
+agents.workspace = true
+quant.workspace = true
+news.workspace = true
+rand.workspace = true
+parallel.workspace = true
+parking_lot.workspace = true
+smallvec.workspace = true

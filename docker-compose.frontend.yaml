@@ -1,0 +1,113 @@
+# Quant Trading Gym - Frontend Development
+# V4.5: React frontend with hot reload, formatting, and integration tests
+
+services:
+  # ─────────────────────────────────────────────────────────────────────────
+  # Frontend Dev: Vite dev server with hot module replacement
+  # ─────────────────────────────────────────────────────────────────────────
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: dockerfile/frontend/Dockerfile
+      target: dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src:rw          # Hot reload source files
+      - ./frontend/index.html:/app/index.html:rw
+      - ./frontend/vite.config.ts:/app/vite.config.ts:ro
+      - ./frontend/tailwind.config.ts:/app/tailwind.config.ts:ro
+      - ./frontend/tsconfig.json:/app/tsconfig.json:ro
+      - ./frontend/tsconfig.app.json:/app/tsconfig.app.json:ro
+      - ./frontend/postcss.config.ts:/app/postcss.config.ts:ro
+    environment:
+      - NODE_ENV=development
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Format: Run prettier and update source files
+  # Usage: docker compose -f docker-compose.frontend.yaml run --rm format
+  # ─────────────────────────────────────────────────────────────────────────
+  format:
+    build:
+      context: .
+      dockerfile: dockerfile/frontend/Dockerfile
+      target: format
+    volumes:
+      - ./frontend/src:/app/src:rw  # Write formatted files back
+    profiles:
+      - tools
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Type Check: Verify TypeScript compiles
+  # Usage: docker compose -f docker-compose.frontend.yaml run --rm typecheck
+  # ─────────────────────────────────────────────────────────────────────────
+  typecheck:
+    build:
+      context: .
+      dockerfile: dockerfile/frontend/Dockerfile
+      target: typecheck
+    volumes:
+      - ./frontend/src:/app/src:ro
+      - ./frontend/tsconfig.json:/app/tsconfig.json:ro
+      - ./frontend/tsconfig.app.json:/app/tsconfig.app.json:ro
+      - ./frontend/tsconfig.node.json:/app/tsconfig.node.json:ro
+      - ./frontend/vite.config.ts:/app/vite.config.ts:ro
+    profiles:
+      - tools
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Integration Test: Test FE-BE API contract against running server
+  # Usage: docker compose -f docker-compose.frontend.yaml run --rm integration-test
+  # Note: Requires server to be running (docker compose up server)
+  # ─────────────────────────────────────────────────────────────────────────
+  integration-test:
+    build:
+      context: .
+      dockerfile: dockerfile/frontend/Dockerfile
+      target: integration-test
+    volumes:
+      - ./frontend/src:/app/src:ro
+      - ./frontend/vitest.integration.config.mjs:/app/vitest.integration.config.mjs:ro
+    environment:
+      - SERVER_URL=http://host.docker.internal:8001
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    profiles:
+      - tools
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Build: Production build (outputs to frontend/dist)
+  # Usage: docker compose -f docker-compose.frontend.yaml run --rm build
+  # ─────────────────────────────────────────────────────────────────────────
+  build:
+    build:
+      context: .
+      dockerfile: dockerfile/frontend/Dockerfile
+      target: dev
+    command: ["npm", "run", "build"]
+    volumes:
+      - ./frontend/src:/app/src:ro
+      - ./frontend/index.html:/app/index.html:ro
+      - ./frontend/tsconfig.json:/app/tsconfig.json:ro
+      - ./frontend/tsconfig.app.json:/app/tsconfig.app.json:ro
+      - ./frontend/tsconfig.node.json:/app/tsconfig.node.json:ro
+      - ./frontend/vite.config.ts:/app/vite.config.ts:ro
+      - ./frontend/tailwind.config.ts:/app/tailwind.config.ts:ro
+      - ./frontend/postcss.config.ts:/app/postcss.config.ts:ro
+      - ./frontend/dist:/app/dist:rw
+    profiles:
+      - tools
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Frontend Prod: Nginx serving built assets (for testing prod build)
+  # Usage: docker compose --profile prod up frontend-prod
+  # ─────────────────────────────────────────────────────────────────────────
+  frontend-prod:
+    build:
+      context: .
+      dockerfile: dockerfile/frontend/Dockerfile
+      target: prod
+    ports:
+      - "8080:80"
+    profiles:
+      - prod
