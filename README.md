@@ -6,8 +6,8 @@ Quant Trading Gym is a high-performance quantitative trading simulation platform
 
 In this project, I try to push the boundaries of AI-assisted development.
 
-- [Executive Summary](docs/executive_summary.md)
-- [Technical Summary](docs/technical_summary.md)
+- [Executive Summary](https://github.com/paulxiep/quant-trading-gym/blob/main/docs/executive_summary.md)
+- [Technical Summary](https://github.com/paulxiep/quant-trading-gym/blob/main/docs/technical_summary.md)
 - `q` to quit, `spacebar` to toggle simulation.
 - **VWAP Executor**: Currently configured as a buyer accumulating 1000 shares. This is an *execution algorithm*, not a *strategy*. Future iterations will consider what the current agents should become.
 
@@ -21,9 +21,9 @@ In this project, I try to push the boundaries of AI-assisted development.
 
 The project is built vertically in iterative stages, ensuring a runnable simulation at each step.
 
-- **[Development log](development_log.md)**
-- **[Project plan vertical](project_plan_vertical.md)**
-- **[Project plan initial](project_plan_initial.md)**
+- **[Development log](https://github.com/paulxiep/quant-trading-gym/blob/main/development_log.md)**
+- **[Project plan vertical](https://github.com/paulxiep/quant-trading-gym/blob/main/project_plan_vertical.md)**
+- **[Project plan initial](https://github.com/paulxiep/quant-trading-gym/blob/main/project_plan_initial.md)**
 
 | Version | Focus | Goal |
 |---------|-------|------|
@@ -37,7 +37,7 @@ The project is built vertically in iterative stages, ensuring a runnable simulat
 | **V7** | **Reinforcement Learning** | Gym environment (V7.1), RL training with PPO/A2C (V7.2). |
 | **V8** | **Portfolio manager game** | Services, API for portfolio manager game. |
 
-![v5](qtgv5.jpg)
+![v5](https://raw.githubusercontent.com/paulxiep/quant-trading-gym/main/qtgv5.jpg)
 
 ## Key Features
 
